@@ -19,6 +19,9 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
+    implementation 'info.picocli:picocli:4.7.6'
+    implementation 'org.jcommander:jcommander:2.0'
 }
 
 test {
@@ -33,4 +36,7 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
+
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
