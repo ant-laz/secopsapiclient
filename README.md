@@ -77,7 +77,9 @@ example ```roles/chronicle.admin```.
 
 Make sure you have a forwarder created in Google SecOps
 
-Let's build the body of the POST request in JSON
+Let's build the body of the POST request in in a file ```config/logs.json```
+
+The template of the file is like this.
 
 ```shell
 {
@@ -97,8 +99,10 @@ Let's build the body of the POST request in JSON
 
 And finally make the request to Chronicle API using your gcloud CLI credentials
 ```shell
-curl -X GET \
+curl -i -X GET \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    -H 'Content-Type: application/json' \
+    -d @config/logs.json \
     "https://${LOCATION}-chronicle.googleapis.com/v1alpha/projects/${BYOP_GCP_PROJECT}/locations/${LOCATION}/instances/${GSECOPS_CUSTOMER_ID}/logTypes/${LOG_TYPE}/logs:import"
 ```
 
