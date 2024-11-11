@@ -34,11 +34,13 @@ credentials to ADC for production code running on Google Cloud.
 
 ## 1. Using your own account to request a Chronicle API using curl
 
+### 1.A Method: feeds.get
+
 As an example, let's get details of a single Feed
 
 https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.feeds/get
 
-Let's use your gcloud CLI credentials
+Check who the current gcloud user is (we'll get their auth token later)
 ```shell
 export CURRENT_USER=$(gcloud config list account --format "value(core.account)")
 echo ${CURRENT_USER}
@@ -54,6 +56,50 @@ And finally make the request to Chronicle API using your gcloud CLI credentials
 curl -X GET \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     "https://${LOCATION}-chronicle.googleapis.com/v1alpha/projects/${BYOP_GCP_PROJECT}/locations/${LOCATION}/instances/${GSECOPS_CUSTOMER_ID}/feeds/${FEED_ID}"
+```
+
+### 1.B Method: logs.import
+
+As an example let's import some logs into Google SecOps
+
+https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.logTypes.logs/import
+
+Check who the current gcloud user is (we'll get their auth token later)
+```shell
+export CURRENT_USER=$(gcloud config list account --format "value(core.account)")
+echo ${CURRENT_USER}
+```
+
+Make sure your user has ``chronicle.logs.import`` permission on the GCP Project
+bound to Google Sec Ops. As per this [guide](https://cloud.google.com/chronicle/docs/onboard/configure-feature-access)
+there are several pre-defined IAM roles which have this permission. For
+example ```roles/chronicle.admin```.
+
+Make sure you have a forwarder created in Google SecOps
+
+Let's build the body of the POST request in JSON
+
+```shell
+{
+  "hint": "",
+  "inline_source": {
+    "forwarder": "projects/${BYOP_GCP_PROJECT}/locations/${LOCATION}/instances/${GSECOPS_CUSTOMER_ID}/forwarders/${GSECOPS_FORWARDER_ID}",
+      "logs": [
+        {
+          "data": "${BASE_64_ENCOCED_STRING}",
+          "log_entry_time":  "2014-11-01T15:01:23Z",
+          "collection_time": "2014-11-01T15:02:23Z"
+        }
+      ]
+  }
+}
+```
+
+And finally make the request to Chronicle API using your gcloud CLI credentials
+```shell
+curl -X GET \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    "https://${LOCATION}-chronicle.googleapis.com/v1alpha/projects/${BYOP_GCP_PROJECT}/locations/${LOCATION}/instances/${GSECOPS_CUSTOMER_ID}/logTypes/${LOG_TYPE}/logs:import"
 ```
 
 ## 2. Using your own account in a locally executing Java program
