@@ -1,8 +1,12 @@
 // Based on
-// https://www.jetbrains.com/help/idea/getting-started-with-gradle.html#run_terminal
+// https://www.jetbrains.com/help/idea/getting-started-with-gradle.html
 plugins {
+    // the java plugin ...
     id 'java'
+    // the application plugin ...
     id 'application'
+    // the protobuf plugin ...
+    id "com.google.protobuf" version "0.9.4"
 }
 
 application {
@@ -13,18 +17,24 @@ group 'com.tonyzaro'
 version '1.0-SNAPSHOT'
 
 repositories {
+    // configure where gradle will find dependencies
     mavenCentral()
 }
 
 dependencies {
+    // dependencies scoped to src/test ---------------------------------------
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    // dependencies scoped to src/main/java ----------------------------------
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
     implementation 'info.picocli:picocli:4.7.6'
     implementation 'org.jcommander:jcommander:2.0'
+    // dependency on the protobuf Java runtime.
+    implementation 'com.google.protobuf:protobuf-java:4.28.3'
 }
 
 test {
+    // configure gradle to run tests with JUnit
     useJUnitPlatform()
 }
 
@@ -39,4 +49,29 @@ jar {
 
 
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+application {
+    mainClassName = "com.tonyzaro.application.SecOpsClient"
+}
+
+protobuf {
+    // protoc complies protocol buffers into java code
+    // This config tells gradle where to find protoc
+    // Select pre-compiled protoc from maven central
+    protoc {
+        // Download from repositories
+        artifact = 'com.google.protobuf:protoc:4.28.3'
+    }
+    generateProtoTasks {
+        // all() returns the collection of all protoc tasks
+        all().configureEach {task ->
+            task.builtins {
+                java {
+                    //if needed can change directory where protos are outputted
+                    //generatedFilesBaseDir = "${projectDir}/src"
+                }
+            }
+        }
+    }
 }
