@@ -23,8 +23,10 @@ message ChronicleLogData {
   string dim3 = 7;
 }
 
+// based on
+// https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.logTypes.logs#Log
 message LogsImportLog {
-  // Output only. The resource name of this log. F
+  // Output only. The resource name of this log.
   optional string name = 1;
   // Required. Raw data for the log entry. A base64-encoded string.
   bytes data = 2 ;
