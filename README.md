@@ -163,11 +163,9 @@ gcloud iam roles create ${IAM_CUSTOM_ROLE_ID} \
   --project=${PROJECT_ID} \
   --title="${IAM_CUSTOM_ROLE_ID}" \
   --description="${IAM_CUSTOM_ROLE_ID}" \
-  --permissions="chronicle.feeds.get" \
+  --permissions="chronicle.feeds.get,chronicle.logs.import" \
   --stage=GA
 ```
-
-TODO::Grant the service account the new custom IAM role
 
 ```shell
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
@@ -175,26 +173,43 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
   --role="projects/${PROJECT_ID}/roles/${IAM_CUSTOM_ROLE_ID}"
 ```
 
-TODO:: Grant the service account a pre-defined IAM roles from Google [SecOps](https://cloud.google.com/chronicle/docs/onboard/configure-feature-access)
-
-```shell
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:${SERVICE_ACCT_FULL}" \
-    --role="roles/chronicle.viewer"
-```
 
 ## 4. Impersonating a service account to request a Chronicle API using curl
 
-TODO::
+### 1.A Method: feeds.get
 
+As an example, let's get details of a single Feed
+
+https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.feeds/get
+
+
+```shell
+curl -X GET \
+    -H "Authorization: Bearer $(gcloud auth print-access-token --impersonate-service-account=${SERVICE_ACCT_FULL})" \
+    "https://${LOCATION}-chronicle.googleapis.com/v1alpha/projects/${BYOP_GCP_PROJECT}/locations/${LOCATION}/instances/${GSECOPS_CUSTOMER_ID}/feeds/${FEED_ID}"
+```
+
+### 1.B Method: logs.import
+
+As an example let's import some logs into Google SecOps
+
+https://cloud.google.com/chronicle/docs/reference/rest/v1alpha/projects.locations.instances.logTypes.logs/import
+
+```shell
+curl -i -X POST \
+    -H "Authorization: Bearer $(gcloud auth print-access-token --impersonate-service-account=${SERVICE_ACCT_FULL})" \
+    -H 'Content-Type: application/json' \
+    -d @config/logs.json \
+    "https://${LOCATION}-chronicle.googleapis.com/v1alpha/projects/${BYOP_GCP_PROJECT}/locations/${LOCATION}/instances/${GSECOPS_CUSTOMER_ID}/logTypes/${LOG_TYPE}/logs:import"
+```
 
 ## 5. Using the service account in a locally executing Java program
 
 TODO::
 
-## 6. Using the service account in a Java program running on Google Cloud services
+## 6. Java Dataflow program calling Chronicle API
 
-TODO:: 
+https://github.com/ant-laz/googlesecops
 
 
 
