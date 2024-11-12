@@ -31,6 +31,8 @@ dependencies {
     implementation 'org.jcommander:jcommander:2.0'
     // dependency on the protobuf Java runtime.
     implementation 'com.google.protobuf:protobuf-java:4.28.3'
+    // helper class to convert from proto to json
+    implementation 'com.google.protobuf:protobuf-java-util:4.28.3'
 }
 
 test {

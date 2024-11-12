@@ -99,7 +99,7 @@ The template of the file is like this.
 
 And finally make the request to Chronicle API using your gcloud CLI credentials
 ```shell
-curl -i -X GET \
+curl -i -X POST \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     -H 'Content-Type: application/json' \
     -d @config/logs.json \
@@ -126,7 +126,9 @@ Execute the program like so
 --location ${LOCATION} \
 --project ${BYOP_GCP_PROJECT} \
 --customerid ${GSECOPS_CUSTOMER_ID} \
---feedid ${FEED_ID}"
+--feedid ${FEED_ID} \
+--forwarderid ${GSECOPS_FORWARDER_ID} \
+--logtype ${LOG_TYPE}"
 ```
 
 
