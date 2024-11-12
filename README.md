@@ -205,7 +205,18 @@ curl -i -X POST \
 
 ## 5. Using the service account in a locally executing Java program
 
-TODO::
+https://github.com/googleapis/google-auth-library-java?tab=readme-ov-file#explicit-credential-loading
+
+```shell
+./gradlew run --args="\
+--location ${LOCATION} \
+--project ${BYOP_GCP_PROJECT} \
+--customerid ${GSECOPS_CUSTOMER_ID} \
+--feedid ${FEED_ID} \
+--forwarderid ${GSECOPS_FORWARDER_ID} \
+--logtype ${LOG_TYPE} \
+--sakeypath config/${SERVICE_ACCT_KEY_NAME}.json"
+```
 
 ## 6. Java Dataflow program calling Chronicle API
 

@@ -25,6 +25,7 @@ import com.tonyzaro.model.ChronicleLogData;
 import com.tonyzaro.model.LogsImportLog;
 import com.tonyzaro.model.LogsImportRequest;
 import com.tonyzaro.model.LogsImportSource;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,9 +52,21 @@ public class SecOpsClient {
   String forwarderid;
   @Parameter(names={"--logtype", "-lg"})
   String logtype;
+  @Parameter(names={"--sakeypath", "-sa"})
+  String sakeypath;
 
   public void getFeedDetails() throws IOException, InterruptedException, URISyntaxException {
-    GoogleCredentials googleCredentials = GoogleCredentials.getApplicationDefault();
+    GoogleCredentials googleCredentials;
+    if(sakeypath != null) {
+      // service account key supplied, let's run as this service account
+      googleCredentials = GoogleCredentials
+          .fromStream(new FileInputStream(sakeypath))
+          .createScoped("https://www.googleapis.com/auth/cloud-platform");
+      googleCredentials.refreshIfExpired();
+    } else {
+      // no service account key suppplied let's run as the user
+      googleCredentials = GoogleCredentials.getApplicationDefault();
+    }
     AccessToken token = googleCredentials.refreshAccessToken();
     String tokenValue = token.getTokenValue();
 
@@ -117,7 +130,16 @@ public class SecOpsClient {
                 .build()
         ).build();
 
-    GoogleCredentials googleCredentials = GoogleCredentials.getApplicationDefault();
+    GoogleCredentials googleCredentials;
+    if(sakeypath != null) {
+      // service account key supplied, let's run as this service account
+      googleCredentials = GoogleCredentials
+          .fromStream(new FileInputStream(sakeypath))
+          .createScoped("https://www.googleapis.com/auth/cloud-platform");;
+    } else {
+      // no service account key suppplied let's run as the user
+      googleCredentials = GoogleCredentials.getApplicationDefault();
+    }
     AccessToken token = googleCredentials.refreshAccessToken();
     String tokenValue = token.getTokenValue();
 
